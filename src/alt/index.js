@@ -91,6 +91,8 @@ class Alt {
       this._actionsRegistry,
       ActionsClass.displayName || ActionsClass.name || 'Unknown'
     )
+    var actionsGenerator
+    var propName
 
     if (fn.isFunction(ActionsClass)) {
       fn.assign(actions, utils.getInternalMethods(ActionsClass, true))
@@ -106,7 +108,16 @@ class Alt {
         }
       }
 
-      fn.assign(actions, new ActionsGenerator(...argsForConstructor))
+      actionsGenerator = new ActionsGenerator(...argsForConstructor)
+      // also get actions from prototype
+      for (propName in actionsGenerator) {
+        // trick eslint `guard-for-in`
+        if (actionsGenerator.hasOwnProperty(propName) ||
+          !actionsGenerator.hasOwnProperty(propName)
+        ) {
+          actions[propName] = actionsGenerator[propName]
+        }
+      }
     } else {
       fn.assign(actions, ActionsClass)
     }

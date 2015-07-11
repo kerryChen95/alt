@@ -212,6 +212,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var actions = {};
 	      var key = utils.uid(this._actionsRegistry, ActionsClass.displayName || ActionsClass.name || 'Unknown');
+	      var actionsGenerator;
+	      var propName;
 
 	      if (fn.isFunction(ActionsClass)) {
 	        var _len4, argsForConstructor, _key4;
@@ -252,7 +254,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            argsForConstructor[_key4 - 2] = _arguments2[_key4];
 	          }
 
-	          fn.assign(actions, new (_bind.apply(ActionsGenerator, [null].concat(_toConsumableArray(argsForConstructor))))());
+	          actionsGenerator = new (_bind.apply(ActionsGenerator, [null].concat(_toConsumableArray(argsForConstructor))))();
+	          // also get actions from prototype
+	          for (propName in actionsGenerator) {
+	            // trick eslint `guard-for-in`
+	            if (actionsGenerator.hasOwnProperty(propName) || !actionsGenerator.hasOwnProperty(propName)) {
+	              actions[propName] = actionsGenerator[propName];
+	            }
+	          }
 	        })();
 	      } else {
 	        fn.assign(actions, ActionsClass);
